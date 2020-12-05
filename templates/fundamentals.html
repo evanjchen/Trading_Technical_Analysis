@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Fundamentals for {{ticker}}</title>
+</head>
+<style type="text/css">
+a:link {
+    text-decoration: none;
+}
+a:hover {
+    text-decoration: underline;
+}
+</style>
+<body>
+
+<h1>Fundamentals for {{ticker}}</h1>
+<h2> (Insert something here)</h2>
+
+<ul>
+
+  {% for key, value in fund.items() %}
+    <li style="list-style:square; font-size:100%;
+    font-family:Verdana, sans-serif;">
+    <b>{{key}}</b>: {{value}}
+    </li> <br>
+  {% endfor %}
+</ul>
+
+</body>
+</html>
+<!
+Symbol: {{fund.symbol}}  <br
+52-week High: {{fund.high52}}  <br
+52-week Low: {{fund.low52}}  <br
+Dividen Yield: {{fund.dividendYield}}  <br
+P/E Ratio: {{fund.peRatio}}  <br
+Return on Equity: {{fund.returnOnEquity}}  <br
+Return on Assets: {{fund.returnOnAssets}}  <br
+Return on Investments(ROI): {{fund.returnOnInvestment}}  <br
+Quick Ratio: {{fund.quickRatio}}  <br
+Current Ratio: {{fund.currentRatio}}  <br
+Interest Coverage: {{fund.interestCoverage}}  <br
+Total Debt to Capital: {{fund.totalDebtToCapital}}  <br
+Long Term Debt to Equity: {{fund.ltDebtToEquity}}  <br
+EPS (TTM): {{fund.epsTTM}}  <br
+EPS Change Year: {{fund.epsChangeYear}}  <br
+Revenue Change (TTM): {{fund.revChangeTTM}}  <br
+Market Cap (Billions): {{fund.marketCap}}  <br
+Book Value per Share: {{fund.bookValuePerShare}}  <br
+Beta: {{fund.beta}}  <br
+Volume (10D Average): {{fund.vol10DayAvg}}  <b
+Volume (3M Average): {{fund.vol3MonthAvg}}  <br>

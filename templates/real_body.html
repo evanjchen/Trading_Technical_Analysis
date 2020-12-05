@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title> Maximum {{iteration}} Real Body Candles for {{ticker}} </title>
+    <style type="text/css">
+        a:link {
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+
+</head>
+<body>
+
+<h1>  {{ticker}}: Top {{iterations}} Real Body Candles in past {{period}}</h1>
+
+
+{% for body in max_real_bodies %}
+
+  <p style=" font-size:100%; font-family:Verdana, sans-serif;">
+    {% for key, value in body.items() %}
+    <b>{{key}}</b>: {{value}} <br>
+    {% endfor %}
+  </p>  <br>
+
+{% endfor %}
+
+
+</body>
+</html>
