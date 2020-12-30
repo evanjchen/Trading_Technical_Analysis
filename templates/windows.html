@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title> Maximum {{iteration}} Real Body Candles for {{ticker}} </title>
+    <style type="text/css">
+        a:link {
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+
+</head>
+<body>
+
+<h1>  {{ticker}}: Rising Windows in past {{period}}</h1>
+
+
+{% for date, support, gap_up in rising_windows %}
+
+  <p style=" font-size:100%; font-family:Verdana, sans-serif;">
+    <b>Date</b>: {{date}} -------------
+    <b>Support</b>: {{support}} -------------
+    <b>Gap-up </b>: {{gap_up}} <br>
+  </p>
+
+{% endfor %}
+
+<p style = "font-size: 200%;"> <b> Highest Support: </b> {{max_support}} </p>
+
+<h1>  {{ticker}}: Falling Windows in past {{period}}</h1>
+
+{% for date, resistance, gap_down in falling_windows %}
+
+  <p style=" font-size:100%; font-family:Verdana, sans-serif;">
+    <b>Date</b>: {{date}} -------------
+    <b>Resistance</b>: {{resistance}} -------------
+    <b>Gap-down </b>: {{gap_down}} <br>
+  </p>
+
+{% endfor %}
+
+<p style = "font-size: 200%;"> <b> Highest Resistance: </b> {{max_resistance}} </p>
+
+</body>
+</html>
