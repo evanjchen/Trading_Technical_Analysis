@@ -2,7 +2,7 @@ from tda import auth, client
 import json
 import datetime as dt
 import numpy as np
-from wrapper import price_history_period
+import wrapper
 import pretty_errors
 
 
@@ -21,7 +21,7 @@ def real_body_candle(ticker, period = 'year', bull = True, iterations = 1):
     Specify the following: period, bull, iterations
     Returns a list of dictionaries with keys: """
     #  Calls function in wrapper.py to get Price history data in dictionary form
-    data = price_history_period(ticker, period)
+    data = wrapper.price_history_period(ticker, period)
     # empty list of dictionaries based on iterations
     max_bodies = [{} for x in range(iterations)]
     color = 'GREEN'
@@ -67,7 +67,7 @@ def volume_Screener(tickers, sd = 3):
 
     for ticker in tickers:
         #  Calls function in wrapper.py to get Price history in dictionary form
-        data = price_history_period(ticker, period = 'month')
+        data = wrapper.price_history_period(ticker, period = 'month')
         high_volume = {}
         # list of dictionaries for each day's candle
         daily_candles = data['candles']
@@ -100,8 +100,7 @@ def call_chain(tick, strike, start_date, end_date):
 
 def windows(ticker, period = 'year'):
     "Gives support levels based off of real body candles short term"
-        # real_bodies = [record.get('close') - record.get('open') for record in data['candles']]
-    data = price_history_period(ticker, period)
+    data = wrapper.price_history_period(ticker, period)
     candles = data['candles']
     rising_windows, falling_windows = [], []
     # Gets date, high of first day and low of next day
@@ -118,4 +117,32 @@ def windows(ticker, period = 'year'):
             gap_down = '{:.2f}'.format(np.round(day_1.get('low') - day_2.get('high'), 2))
             resistance = '{:.2f}'.format(np.round(day_1.get('low'), 2))
             falling_windows.append((date_occurred, resistance, gap_down))
-    return rising_windows, falling_windows
+    max_support = max([window[1] for window in rising_windows])
+    max_resistance = max([window[1] for window in falling_windows])
+    return rising_windows, falling_windows, max_support, max_resistance
+
+# ISSUE: TOO MANY REQUESTS
+def scan_tickers_near_support_resistance(tickers):
+    """Return tickers from given list of tickers that have current price near support/resistance
+    -------- Define Threshold ------Edit to add most recent support/resistance"""
+    # NOTE:: BASING ON MOST RECENT SUPPORT/RESISTANCE OR MAX/
+    # ----------CURRENTLY NEXT TO MAX_SUPPORT----------------------
+    # tickers = wrapper.get_sp500_tickers()
+    near_support, near_resistance = {}, {}
+    threshold = 1    # Define threshold
+    # Need to make dictionary with keys: tickers, current_price, max_support, max_resistance, recent, support, recent_resistance
+    for ticker in tickers:
+        rising_windows, falling_windows, max_support, max_resistance = windows(ticker, period = 'year')
+        most_rcnt_support = rising_windows[-1]          # gets tuple of date, support, nominal
+        most_rcnt_resistance = falling_windows[-1]      # gets tuple of date, resistance, nominal
+        current_price = wrapper.get_current_price(ticker)
+        # base by threshold % points
+        if abs((current_price - float(max_support))/current_price) <= threshold/100:
+            near_support[ticker] = {'last_price' : current_price,
+                                    'max_support': max_support,
+                                    'max_resistance': max_resistance}
+        if abs((current_price - float(max_resistance))/current_price) <= threshold/100:
+            near_support[ticker] = {'last_price' : current_price,
+                                    'max_support': max_support,
+                                    'max_resistance': max_resistance}
+    return near_support, near_resistance

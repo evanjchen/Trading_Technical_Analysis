@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title> Scanning Stocks Near Window Levels </title>
+    <style type="text/css">
+        a:link {
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+
+</head>
+<body>
+
+<h1>  Stocks near Support</h1>
+{% for ticker, values in near_support.items() %}
+  <h2> {{ticker}}</h2>
+
+    {% for Key, Value in values.items() %}
+    <p style=" font-size:100%; font-family:Verdana, sans-serif;">
+      <b>{{Key}}</b>: {{Value}}
+    </p>
+    {% endfor %}
+{% endfor %}
+
+
+<h1>  Stocks near Resistance</h1>
+{% for ticker, values in near_resistance.items() %}
+  <h2> {{ticker}}</h2>
+
+    {% for Key, Value in values.items() %}
+    <p style=" font-size:100%; font-family:Verdana, sans-serif;">
+      <b>{{Key}}</b>: {{Value}}
+    </p>
+    {% endfor %}
+{% endfor %}
+
+
+</body>
+</html>

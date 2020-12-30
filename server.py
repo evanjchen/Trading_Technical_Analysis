@@ -60,7 +60,6 @@ def favicon():
 # STOCK FUNDAMENTALS
 @app.route("/<ticker>")
 def get_fundamentals(ticker):
-    # Only get the fundamnetals of interest
     data = c.search_instruments(ticker, projection = client.Client.Instrument.Projection.FUNDAMENTAL)
     assert data.status_code == 200, data.raise_for_status()       # Not sure what this does
     data = data.json()         # Original  data is of type "<class 'requests.models.Response'>"
@@ -79,11 +78,17 @@ def real_body(ticker):
 @app.route("/<ticker>/windows")
 def get_windows(ticker):
     """ Rising and falling windows in past 1 year """
-    rising_windows, falling_windows = indicators.windows(ticker = ticker, period = 'year')
-    max_support = max([window[1] for window in rising_windows])
-    max_resistance = max([window[1] for window in falling_windows])
-    return render_template('windows.html', ticker = ticker, rising_windows = rising_windows, falling_windows = falling_windows,
+    rising_windows, falling_windows, max_support, max_resistance = indicators.windows(ticker = ticker, period = 'year')
+    return render_template('windows.html', ticker = ticker, period = period, rising_windows = rising_windows, falling_windows = falling_windows,
                                                             max_support = max_support, max_resistance = max_resistance)
+# Define a threshold?
+@app.route("/scan_windows")
+def near_windows():
+    """Return tickers from given list of tickers that have current price near support/resistance
+    -------- Define Threshold ------"""
+    near_support, near_resistance = indicators.scan_tickers_near_support_resistance(tickers)
+    return render_template('near_windows.html', near_support = near_support, near_resistance = near_resistance)
+
 
 #----------------------------- MAIN-------------------------------------------
 # Authentication
@@ -98,14 +103,9 @@ except FileNotFoundError:
 # Start thinking of user input in terminal. Ask terminal for input
 # i = sys.argv.index('server:app')
 # ticker = sys.argv[i+1]      # first argument = ticker
-
 # gunicorn --threads 4 -b 0.0.0.0:5000 --access-logfile server.log server:app
-
-# end = time.time()
-# print("TIME TO RUN:", end - start, "seconds")
 
 # CHRIS' TICKERS
 tickers = ['TDOC', 'LULU', 'CRWD', 'CGC', 'SPOT', 'FTCH', 'NVDA', 'AMD', 'CRM', 'DOCU']
-for ticker in tickers:
-    indicators.windows(ticker)
+
 app.run(host='0.0.0.0', port=5000)

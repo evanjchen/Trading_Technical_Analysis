@@ -4,6 +4,8 @@ import config       # stores token path and API key
 import requests
 import numpy as np
 import pretty_errors
+import pprint
+import pandas as pd
 
 try:
     c = auth.client_from_token_file(config.token_path, config.api_key)
@@ -39,16 +41,21 @@ def price_history_period(ticker, period = 'year'):
     return price_history.json()
 
 
-def get_fundamentals(ticker):
-    # Only get the fundamnetals of interest
-    data = c.search_instruments(ticker, projection = client.Client.Instrument.Projection.FUNDAMENTAL)
-    assert data.status_code == 200, data.raise_for_status()       # Not sure what this does
-    # data is of type "<class 'requests.models.Response'>"
+def get_current_price(ticker):
+    """Gets last price of ticker"""
+    data = c.get_quote(ticker)
+    assert data.status_code == 200, data.raise_for_status()
     data = data.json()
-    fundamentals = data[ticker]['fundamental']
-    keys = data[ticker]['fundamental'].keys()
-    print(keys)
-    print(json.dumps(fundamentals, indent = 4))
-    print(type(fundamentals))
-    return fundamentals, keys
-get_fundamentals('AMD')
+    data = data[ticker]
+    return data['lastPrice']
+
+def get_sp500_tickers():
+    """Returns list of S&P500 tickers sorted by company Name"""
+    table=pd.read_html('https://en.wikipedia.org/wiki/List_of_S%26P_500_companies')
+    df = table[0]
+    tickers = df['Symbol'].tolist()
+    return tickers  # tickers are sorted by Company name by default
+
+def get_NQ_tickers():
+    """Returns list of NASDAQ tickers"""
+    pass
