@@ -57,6 +57,7 @@ def favicon():
     with open('icon2.png', 'rb') as f:
         return f.read()
 
+# STOCK FUNDAMENTALS
 @app.route("/<ticker>")
 def get_fundamentals(ticker):
     # Only get the fundamnetals of interest
@@ -67,18 +68,24 @@ def get_fundamentals(ticker):
     keys = data[ticker]['fundamental'].keys()  # Gets the categories
     return render_template('fundamentals.html', ticker = ticker, fund = fundamentals)
 
- # Need to pass in arguments to the URL
+ #REAL BODIES
 @app.route("/<ticker>/real_body")
 def real_body(ticker):
     """ Displays real_bodies """
     max_real_bodies = indicators.real_body_candle(ticker = ticker, period = 'year',  bull = True, iterations = 5)
     return render_template('real_body.html', ticker = ticker, max_real_bodies = max_real_bodies, iterations = 5, period = 'year')
 
-
+# RISING AND FALLING WINDOWS
+@app.route("/<ticker>/windows")
+def get_windows(ticker):
+    """ Rising and falling windows in past 1 year """
+    rising_windows, falling_windows = indicators.windows(ticker = ticker, period = 'year')
+    max_support = max([window[1] for window in rising_windows])
+    max_resistance = max([window[1] for window in falling_windows])
+    return render_template('windows.html', ticker = ticker, rising_windows = rising_windows, falling_windows = falling_windows,
+                                                            max_support = max_support, max_resistance = max_resistance)
 
 #----------------------------- MAIN-------------------------------------------
-
-# start = time.time()
 # Authentication
 try:
     c = auth.client_from_token_file(config.token_path, config.api_key)
@@ -97,5 +104,8 @@ except FileNotFoundError:
 # end = time.time()
 # print("TIME TO RUN:", end - start, "seconds")
 
-# Remove this line of code after
+# CHRIS' TICKERS
+tickers = ['TDOC', 'LULU', 'CRWD', 'CGC', 'SPOT', 'FTCH', 'NVDA', 'AMD', 'CRM', 'DOCU']
+for ticker in tickers:
+    indicators.windows(ticker)
 app.run(host='0.0.0.0', port=5000)

@@ -88,10 +88,6 @@ def volume_Screener(tickers, sd = 3):
             print("Date occurred:", k)
             print("Standard deviations above mean:", v, "\n")
 
-def futures(ticker, bull = True):
-# Backtest for sets of 15 min green candles.
-# Buy signal =
-    pass
 def call_chain(tick, strike, start_date, end_date):
     """dates in YYYY-MM-DD format"""
     start = dt.datetime.strptime(start_date, '%Y-%m-%d').date()
@@ -101,8 +97,25 @@ def call_chain(tick, strike, start_date, end_date):
     strike = strike, strike_from_date = start, strike_to_date = end)
     print(json.dumps(options.json(), indent = 4))
 
-def short_term_support(tick):
+
+def windows(ticker, period = 'year'):
     "Gives support levels based off of real body candles short term"
-    # Get open and closing difference for past 6 moths
-    # compare currently daily candle and check if difference is
-    # Possibly re-use high-volume scanner. Mean = 5 min candles, SD = 5 min candles
+        # real_bodies = [record.get('close') - record.get('open') for record in data['candles']]
+    data = price_history_period(ticker, period)
+    candles = data['candles']
+    rising_windows, falling_windows = [], []
+    # Gets date, high of first day and low of next day
+    for day_1, day_2 in zip(candles[:-1], candles[1:]):
+        # Rising windows: (Date, support, gap-up)
+        if day_2.get('low') > day_1.get('high'):
+            date_occurred = to_date(day_1.get('datetime'))
+            gap_up = '{:.2f}'.format(np.round(day_2.get('low') - day_1.get('high'), 2))
+            support = '{:.2f}'.format(np.round(day_1.get('high'), 2))
+            rising_windows.append((date_occurred, support, gap_up))
+        # Falling windows: (Date, support, gap-down)
+        if day_1.get('low') > day_2.get('high'):
+            date_occurred = to_date(day_1.get('datetime'))
+            gap_down = '{:.2f}'.format(np.round(day_1.get('low') - day_2.get('high'), 2))
+            resistance = '{:.2f}'.format(np.round(day_1.get('low'), 2))
+            falling_windows.append((date_occurred, resistance, gap_down))
+    return rising_windows, falling_windows
