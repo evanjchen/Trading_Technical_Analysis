@@ -1,4 +1,3 @@
-from tda import auth, client
 import json
 import config       # stores token path and API key
 import requests
@@ -6,16 +5,17 @@ import numpy as np
 import pretty_errors
 import pprint
 import pandas as pd
+from selenium import webdriver
+from tda import auth, client
 
 try:
     c = auth.client_from_token_file(config.token_path, config.api_key)
 except FileNotFoundError:
-    from selenium import webdriver
     with webdriver.Chrome(executable_path = '/Users/Evan/Documents/trading/chromedriver') as driver:
         # authenticate from token config.py file
         c = auth.client_from_login_flow(driver, config.api_key, config.redirect_uri, config.token_path)
 
-def price_history_period(ticker, period = 'year'):
+def price_history_period(ticker, period='year'):
     """Returns price_history data for a certain period"
     -----------------DEFAULT = 'year'--------------------
     year = 1 year (daily candle); month = 3 months(daily candle);  daily = 5 days (5 min candle)"""
